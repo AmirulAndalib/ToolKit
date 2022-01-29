@@ -42,11 +42,7 @@ class Chat:
         from libs.user import User
         bot = Bot.get_current()
 
-        if isinstance(auth, t.Chat):
-            chat = auth
-        else:
-            chat = await bot.get_chat(auth)
-
+        chat = auth if isinstance(auth, t.Chat) else await bot.get_chat(auth)
         if chat.type in [t.ChatType.PRIVATE]:
             raise ValueError("Chat type incorrect")
 
@@ -64,10 +60,7 @@ class Chat:
 
     @property
     def mention(self):
-        if self.username:
-            return self.username
-        else:
-            return self.title
+        return self.username or self.title
 
     @property
     def link(self):
@@ -75,10 +68,7 @@ class Chat:
 
     @property
     def ping(self):
-        if self.username:
-            return f"@{self.username}"
-        else:
-            return self.link
+        return f"@{self.username}" if self.username else self.link
 
     @property
     def statistic_mode(self) -> int:

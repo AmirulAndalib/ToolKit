@@ -46,10 +46,10 @@ async def purge(msg: t.Message, parsed: ParsedArgs):
 async def clear_history(msg: t.Message, parsed: ParsedArgs):
     parsed.targets: list[User]
     parsed.time: timedelta
-    messages = []
-
     await u.raise_permissions_errors(parsed.targets, await msg.chat.get_administrators())
     if parsed.targets:
+        messages = []
+
         for user in parsed.targets:
             messages += [
                 m.message_id for m in

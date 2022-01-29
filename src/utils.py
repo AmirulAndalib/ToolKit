@@ -38,8 +38,7 @@ def get_value(_dict: dict, key_history: list, default: p.Any = None) -> p.Any:
             _dict = _dict[key]
             result = _dict
         else:
-            return default
-
+            return result
     return result
 
 
@@ -80,12 +79,10 @@ def get_key_by_id(_dict: dict, id: int) -> p.Any:
 
 
 def break_list_by_step(_list: list, step: int) -> list[list]:
-    result = []
-
-    for i in range((len(_list) // step) + 1):
-        result.append(_list[i * step:i * step + step])
-
-    return result
+    return [
+        _list[i * step : i * step + step]
+        for i in range((len(_list) // step) + 1)
+    ]
 
 
 async def raise_permissions_errors(users: list[t.User], admins: list[t.ChatMember]):
@@ -143,8 +140,7 @@ class NewInstanceMiddleware(BaseMiddleware):
         from libs.chat import Chat
         from libs.user import User
 
-        msg = upd.message
-        if msg:
+        if msg := upd.message:
             if await f.message.is_chat.check(msg) and not Database.get_chat(msg.chat.id):
                 await Chat.create(msg.chat)
             Database.get_user(msg.from_user.id)
@@ -184,21 +180,21 @@ class LogMiddleware(BaseMiddleware):
         super().__init__()
 
     async def on_process_update(self, upd: t.Update, *args):
-        upd = upd.chat_member
-        if upd:
-            member = upd.new_chat_member.user
+        if not (upd := upd.chat_member):
+            return
+        member = upd.new_chat_member.user
 
-            if f.user.promote_admin(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.PROMOTE_ADMIN, upd.date)
-            if f.user.restrict_admin(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.RESTRICT_ADMIN, upd.date)
+        if f.user.promote_admin(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.PROMOTE_ADMIN, upd.date)
+        if f.user.restrict_admin(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.RESTRICT_ADMIN, upd.date)
 
-            if f.user.promote_member(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.PROMOTE_MEMBER, upd.date)
-            if f.user.restrict_member(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.RESTRICT_MEMBER, upd.date)
+        if f.user.promote_member(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.PROMOTE_MEMBER, upd.date)
+        if f.user.restrict_member(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.RESTRICT_MEMBER, upd.date)
 
-            if f.user.add_member(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.ADD_MEMBER, upd.date)
-            if f.user.removed_member(upd):
-                Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.REMOVE_MEMBER, upd.date)
+        if f.user.add_member(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.ADD_MEMBER, upd.date)
+        if f.user.removed_member(upd):
+            Database.add_log(upd.chat.id, upd.from_user.id, member.id, l.REMOVE_MEMBER, upd.date)

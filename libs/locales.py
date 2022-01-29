@@ -12,11 +12,7 @@ lang = None
 
 class TextEncoder(json.JSONEncoder):
     def default(self, object):
-        if isinstance(object, Text):
-            result = str(object)
-        else:
-            result = super().default(object)
-        return result
+        return str(object) if isinstance(object, Text) else super().default(object)
 
 
 # noinspection PyMissingConstructor
@@ -42,10 +38,7 @@ class Text(UserString):
             txt = src(msg)
             message += txt
 
-        if self._format_callback:
-            return self._format_callback(message)
-        else:
-            return message
+        return self._format_callback(message) if self._format_callback else message
 
     def format_callback(self):
         def wrapper(func):

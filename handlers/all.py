@@ -16,19 +16,18 @@ from src.instances import MessageData
 async def help(msg: t.Message, parsed: ParsedArgs):  # help command
     cmd: str = parsed.cmd
     text = None
-    if not cmd:  # if not search command
-        if await f.message.is_chat.check(msg):  # if chat
-            if await f.user.is_admin.check(msg):  # if member admin
-                text = str(other.command_list.get_group(t.BotCommandScopeAllChatAdministrators()))
-            else:
-                text = str(other.command_list.get_group(t.BotCommandScopeAllGroupChats()))
-        elif await f.message.is_private.check(msg):  # if private chat
-            text = str(other.command_list.get_group(t.BotCommandScopeAllPrivateChats()))
-    else:
+    if cmd:
         command = other.command_list.get(cmd.removeprefix("/"))
         if not command:  # if command not found
             raise e.CommandNotFound()
         text = str(command)
+    elif await f.message.is_chat.check(msg):  # if chat
+        if await f.user.is_admin.check(msg):  # if member admin
+            text = str(other.command_list.get_group(t.BotCommandScopeAllChatAdministrators()))
+        else:
+            text = str(other.command_list.get_group(t.BotCommandScopeAllGroupChats()))
+    elif await f.message.is_private.check(msg):  # if private chat
+        text = str(other.command_list.get_group(t.BotCommandScopeAllPrivateChats()))
     await msg.answer(text, disable_web_page_preview=True)
 
 

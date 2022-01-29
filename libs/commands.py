@@ -16,11 +16,7 @@ class Commands:
         return iter(self.groups)
 
     def __format__(self, format_spec: str) -> str:
-        text = ""
-        for group in self:
-            if group.commands:
-                text += str(group)
-        return text
+        return "".join(str(group) for group in self if group.commands)
 
     def __str__(self) -> str:
         return format(self)
@@ -44,8 +40,7 @@ class Commands:
 
     def get(self, command: str) -> p.Optional["Command"]:
         for group in self:
-            cmd = group.get(command)
-            if cmd:
+            if cmd := group.get(command):
                 return cmd
 
     def get_group(self, scope: t.BotCommandScope | None = None):
@@ -193,4 +188,4 @@ class Command:
 
 
 def _l(lang: str):
-    return None if lang in ["other"] else lang
+    return None if lang in {"other"} else lang

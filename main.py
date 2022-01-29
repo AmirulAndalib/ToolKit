@@ -26,13 +26,10 @@ parser.add_option('-i', '--init-commands',
                   help='Re init bot commands')
 values, args = parser.parse_args()
 
-if values.test:
+if values.test or not values.main:
     config.token = config.test_token
-elif values.main:
-    config.token = config.main_token
 else:
-    config.token = config.test_token
-
+    config.token = config.main_token
 from bot import dp, client
 import libs
 import src
@@ -56,7 +53,7 @@ async def shutdown(dp: Dispatcher):
     logging.warning("Delete MessageData")
     await MessageData.close()
     await client.stop()
-    logging.warning(f"Bot stopped")
+    logging.warning('Bot stopped')
 
 
 async def startup(dp: Dispatcher):

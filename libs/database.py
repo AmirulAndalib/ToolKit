@@ -39,12 +39,11 @@ def format_delta(column: str, delta: timedelta, contain: bool = True):
     from_date = datetime.now()
     to_date = from_date - delta
 
-    if contain:
-        result = f"{column}<={format_value(from_date)} AND {column}>={format_value(to_date)}"
-    else:
-        result = f"{column}<{format_value(from_date)} AND {column}>{format_value(to_date)}"
-
-    return result
+    return (
+        f"{column}<={format_value(from_date)} AND {column}>={format_value(to_date)}"
+        if contain
+        else f"{column}<{format_value(from_date)} AND {column}>{format_value(to_date)}"
+    )
 
 
 def format_value(value: p.Any) -> str:
@@ -55,11 +54,7 @@ def format_value(value: p.Any) -> str:
     elif isinstance(value, datetime):
         value = value.isoformat(" ", "seconds")
 
-    if isinstance(value, str):
-        value = repr(value)
-    else:
-        value = str(value)
-
+    value = repr(value) if isinstance(value, str) else str(value)
     return value
 
 
@@ -151,10 +146,7 @@ class _link_obj:
     def set(self, name: str, value: p.Any):
         from src.instances import Database as db
 
-        where = {}
-        for l in self._links:
-            where[l] = self.__dict__[l]
-
+        where = {l: self.__dict__[l] for l in self._links}
         if name in self.__dict__:
             self.__dict__[name] = value
 
@@ -602,10 +594,7 @@ class Database:
             if one:
                 return cursor.fetchone()
             else:
-                if size:
-                    return cursor.fetchmany(size)
-                else:
-                    return cursor.fetchall()
+                return cursor.fetchmany(size) if size else cursor.fetchall()
 
     def update(self, sql: str):
         logging.debug(f"Updating database:\n    {sql}")

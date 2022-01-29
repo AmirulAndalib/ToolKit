@@ -52,11 +52,7 @@ class User:
     async def create(cls, auth: str | int | t.User) -> "User":
         from bot import client
 
-        if isinstance(auth, t.User):
-            user = auth
-        else:
-            user = await client.get_users(auth)
-
+        user = auth if isinstance(auth, t.User) else await client.get_users(auth)
         return cls(user)
 
     @property
@@ -68,10 +64,7 @@ class User:
 
     @property
     def mention(self) -> str:
-        if self.username:
-            return f"@{self.username}"
-        else:
-            return self.full_name
+        return f"@{self.username}" if self.username else self.full_name
 
     @property
     def link(self) -> str:
@@ -79,10 +72,7 @@ class User:
 
     @property
     def ping(self) -> str:
-        if self.username:
-            return f"@{self.username}"
-        else:
-            return self.link
+        return f"@{self.username}" if self.username else self.link
 
     @property
     def statistic_mode(self) -> int:

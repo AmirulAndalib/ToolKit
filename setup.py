@@ -26,8 +26,8 @@ def _opt_selector(options: dict[str, p.Callable], default: int | None = None, pm
     print(sep)
 
     num = 1
-    for opt in options:
-        if options[opt] is None:
+    for opt, value in options.items():
+        if value is None:
             print()
             continue
 
@@ -52,12 +52,8 @@ def _opt_selector(options: dict[str, p.Callable], default: int | None = None, pm
 
 
 def _yes(default: bool = True) -> bool:
+    it = "[Y|n]" if default else "[y|N]"
     while True:
-        if default:
-            it = "[Y|n]"
-        else:
-            it = "[y|N]"
-
         i = input(f"{it} -> ")
         if i.lower() in ["y", "n"]:
             return i.lower() == "y"
@@ -72,15 +68,14 @@ def _input(prompt: str, default: str = None, required: bool = True) -> str:
         print(f"Default {default}")
     while True:
         result = input(f"{prompt} -> ")
-        if not result:
-            if default:
-                result = default
-                break
-            elif required:
-                print("Parameter required")
-        else:
+        if result:
             break
 
+        if default:
+            result = default
+            break
+        elif required:
+            print("Parameter required")
     return result
 
 
@@ -88,7 +83,7 @@ def _cmd(cmd: str, show_cmd: bool = True) -> bool:
     if show_cmd:
         input(f"Press enter for execute {cmd}")
     result = os.system(cmd)
-    return True if result == 0 else False
+    return result == 0
 
 
 def _clear():
@@ -107,10 +102,7 @@ def systemd_unit_generator():
         py_path = _input("Path to python 3.9", sys.executable)
 
         print("Send kill (if SIGTERM Timeout)")
-        send_kill = "off"
-        if _yes(True):
-            send_kill = "on"
-
+        send_kill = "on" if _yes(True) else "off"
         with open("ToolKit.sample.service", "r") as file:
             sample = file.read().format(username=username, path=path, py_path=py_path, send_kill=send_kill)
 
@@ -453,8 +445,7 @@ if __name__ == '__main__':
 
     _clear()
     while True:
-        if default >= exit_index:
-            default = exit_index
+        default = min(default, exit_index)
         term = shutil.get_terminal_size()
         sep = "=" * term.columns
         try:

@@ -166,12 +166,11 @@ class BaseOrderParser(BaseParser, ABC):
         obj = ParseObj(text, entities, reply_user)
 
         for arg in self.args:
-            if arg.required:
-                if not await arg.check(obj):
-                    if err:
-                        raise e.ArgumentError.ArgumentRequired(arg.name)
-                    else:
-                        return False
+            if arg.required and not await arg.check(obj):
+                if err:
+                    raise e.ArgumentError.ArgumentRequired(arg.name)
+                else:
+                    return False
         return True
 
     async def check_all(self, text: str, entities: list[t.MessageEntity] = [], reply_user: t.User = None,
@@ -189,12 +188,11 @@ class BaseOrderParser(BaseParser, ABC):
                           err: bool = False, *types: str):
         obj = ParseObj(text, entities, reply_user)
         for arg in self.args:
-            if arg.dest in types:
-                if not await arg.check(obj):
-                    if err:
-                        raise e.ArgumentError.ArgumentRequired(arg.name)
-                    else:
-                        return False
+            if arg.dest in types and not await arg.check(obj):
+                if err:
+                    raise e.ArgumentError.ArgumentRequired(arg.name)
+                else:
+                    return False
         return True
 
 

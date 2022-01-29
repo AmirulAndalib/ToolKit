@@ -60,8 +60,6 @@ class MyError(Exception):
                     pass
         elif upd.callback_query:
             await upd.callback_query.answer(self.text, self.alert, cache_time=int(self.auto_delete))
-        else:
-            pass
 
     async def log(self):
         upd = t.Update.get_current()

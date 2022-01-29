@@ -27,8 +27,14 @@ class Settings:
              callback_data: str | None = None) -> Menu | Submenu:
         buttons: list[Button, Submenu] = []
         if text and callback_data:
-            menu = Submenu(self.title, text, str(callback_data) + "@" + str(uuid.uuid4())[0:8], self.row_width,
-                           undo=self.undo)
+            menu = Submenu(
+                self.title,
+                text,
+                str(callback_data) + "@" + str(uuid.uuid4())[:8],
+                self.row_width,
+                undo=self.undo,
+            )
+
         else:
             menu = Menu(self.title, self.row_width, undo=self.undo)
 
@@ -90,9 +96,8 @@ class Elements:
         self.text_format = text_format
 
     def buttons(self, settings: "SettingsType") -> list[Button]:
-        num = 0
         buttons: list[Button] = []
-        for key in settings:
+        for num, key in enumerate(settings):
             if isinstance(settings, list):
                 value = key
                 key = None
@@ -113,8 +118,6 @@ class Elements:
 
             button = Button(text, callback_data)
             buttons.append(button)
-
-            num += 1
 
         return buttons
 

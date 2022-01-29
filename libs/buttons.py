@@ -76,8 +76,7 @@ class Menu(t.InlineKeyboardMarkup):
 
     @property
     def copy(self):
-        c = deepcopy(self)
-        return c
+        return deepcopy(self)
 
 
 class Button(t.InlineKeyboardButton):
@@ -105,8 +104,7 @@ class Button(t.InlineKeyboardButton):
 
     @property
     def menu(self) -> t.InlineKeyboardMarkup:
-        im = t.InlineKeyboardMarkup().add(self)
-        return im
+        return t.InlineKeyboardMarkup().add(self)
 
     async def _filter(self, clb: t.CallbackQuery):
         return str(self.callback_data) == str(clb.data)

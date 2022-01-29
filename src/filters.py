@@ -14,14 +14,15 @@ objType = Union[t.Message, t.CallbackQuery, t.ChatMemberUpdated]
 class _helper:
     @staticmethod
     def get_user_and_chat(obj: objType):
-        if isinstance(obj, t.Message):
+        if (
+            isinstance(obj, t.Message)
+            or not isinstance(obj, t.CallbackQuery)
+            and isinstance(obj, t.ChatMemberUpdated)
+        ):
             chat = obj.chat
             user = obj.from_user
         elif isinstance(obj, t.CallbackQuery):
             chat = obj.message.chat
-            user = obj.from_user
-        elif isinstance(obj, t.ChatMemberUpdated):
-            chat = obj.chat
             user = obj.from_user
         else:
             raise TypeError()

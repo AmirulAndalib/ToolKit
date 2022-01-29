@@ -88,29 +88,19 @@ def command_text(parsed: ParsedArgs, executor: User):
     users = " ".join([u.ping for u in parsed.targets])
     result = ""
 
-    if len(parsed.targets) > 1:
-        if type == "ban":
+    if type == "ban":
+        if len(parsed.targets) > 1:
             result = text.chat.admin.multi_ban
-        elif type == "unban":
-            result = text.chat.admin.multi_unban
-        elif type == "kick":
-            result = text.chat.admin.multi_kick
-        elif type == "mute":
-            result = text.chat.admin.multi_mute
-        elif type == "unmute":
-            result = text.chat.admin.multi_unmute
-    else:
-        if type == "ban":
+        else:
             result = text.chat.admin.ban
-        elif type == "unban":
-            result = text.chat.admin.unban
-        elif type == "kick":
-            result = text.chat.admin.kick
-        elif type == "mute":
-            result = text.chat.admin.mute
-        elif type == "unmute":
-            result = text.chat.admin.unmute
-
+    elif type == "unban":
+        result = text.chat.admin.multi_unban
+    elif type == "kick":
+        result = text.chat.admin.multi_kick
+    elif type == "mute":
+        result = text.chat.admin.multi_mute
+    elif type == "unmute":
+        result = text.chat.admin.multi_unmute
     if dates.forever(parsed.until):
         until = text.chat.admin.forever
     else:

@@ -237,9 +237,7 @@ class TextArg(BaseArg):
         super().__init__(dest, name, required, default)
 
     async def parse(self, parse: ParseObj):
-        texts = []
-        for match in parse.find(self.regexp):
-            texts.append(match.group())
+        texts = [match.group() for match in parse.find(self.regexp)]
         return self.sep.join(texts)
 
     async def check(self, parse: ParseObj):
@@ -267,10 +265,7 @@ class NumberArg(BaseArg):
         super().__init__(dest, name, required, default)
 
     async def parse(self, parse: ParseObj):
-        numbers = []
-        for match in parse.find(self.regexp):
-            numbers.append(int(match.group()))
-
+        numbers = [int(match.group()) for match in parse.find(self.regexp)]
         num = self.func(numbers)
         if self.min and self.max:
             if self.contain:
@@ -313,10 +308,9 @@ class FlagArg(BaseArg):
 
     async def check(self, parse: ParseObj):
         for flag in self.flags:
-            if flag.required:
-                if not await flag.check(deepcopy(parse)):
-                    self.name = flag.name
-                    return False
+            if flag.required and not await flag.check(deepcopy(parse)):
+                self.name = flag.name
+                return False
         return True
 
 
